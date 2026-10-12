@@ -3,18 +3,31 @@
 {% block content %}
 <div class="card">
     <h2>Create Account</h2>
+
+    {% if success %}
+    <div class="success">{{ success }}</div>
+    {% endif %}
+
     <form method="POST" action="{{ url_for('register') }}" novalidate>
         <label for="name">Full Name</label>
-        <input type="text" id="name" name="name" placeholder="Enter your full name">
+        <input type="text" id="name" name="name" placeholder="Enter your full name"
+               value="{{ form.get('name', '') }}" class="{{ 'invalid' if errors.get('name') }}">
+        {% if errors.get('name') %}<div class="error">{{ errors.get('name') }}</div>{% endif %}
 
         <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="you@example.com">
+        <input type="email" id="email" name="email" placeholder="you@example.com"
+               value="{{ form.get('email', '') }}" class="{{ 'invalid' if errors.get('email') }}">
+        {% if errors.get('email') %}<div class="error">{{ errors.get('email') }}</div>{% endif %}
 
         <label for="phone">Phone Number</label>
-        <input type="text" id="phone" name="phone" placeholder="10-digit mobile number">
+        <input type="text" id="phone" name="phone" placeholder="10-digit mobile number"
+               value="{{ form.get('phone', '') }}" class="{{ 'invalid' if errors.get('phone') }}">
+        {% if errors.get('phone') %}<div class="error">{{ errors.get('phone') }}</div>{% endif %}
 
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Enter password">
+        <input type="password" id="password" name="password" placeholder="Enter password"
+               class="{{ 'invalid' if errors.get('password') }}">
+        {% if errors.get('password') %}<div class="error">{{ errors.get('password') }}</div>{% endif %}
         <small>8 to 20 characters with uppercase, lowercase, digit and special character</small>
 
         <button type="submit">Register</button>

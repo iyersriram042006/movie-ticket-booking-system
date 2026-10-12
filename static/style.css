@@ -13,3 +13,5 @@ button { width: 100%; margin-top: 20px; padding: 12px; background: #e50914; colo
 button:hover { background: #c40812; }
 .hint { margin-top: 14px; text-align: center; font-size: 0.9rem; }
 .error { color: #c0392b; font-size: 0.85rem; margin-top: 4px; }
+input.invalid { border-color: #c0392b; }
+.success { background: #e8f6ee; color: #1e7e46; padding: 10px; border-radius: 6px; margin-bottom: 14px; font-size: 0.9rem; text-align: center; }

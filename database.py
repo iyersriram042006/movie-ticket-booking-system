@@ -25,6 +25,27 @@ def init_db():
     conn.close()
 
 
+def email_exists(email):
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT 1 FROM users WHERE email = ?", (email,)
+    ).fetchone()
+    conn.close()
+    return row is not None
+
+
+def create_user(name, email, phone, password_hash):
+    conn = get_connection()
+    try:
+        conn.execute(
+            "INSERT INTO users (name, email, phone, password_hash) VALUES (?, ?, ?, ?)",
+            (name, email, phone, password_hash),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
 if __name__ == "__main__":
     init_db()
     print("Database initialised.")

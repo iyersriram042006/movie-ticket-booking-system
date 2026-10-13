@@ -15,3 +15,9 @@ button:hover { background: #c40812; }
 .error { color: #c0392b; font-size: 0.85rem; margin-top: 4px; }
 input.invalid { border-color: #c0392b; }
 .success { background: #e8f6ee; color: #1e7e46; padding: 10px; border-radius: 6px; margin-bottom: 14px; font-size: 0.9rem; text-align: center; }
+.navbar { display: flex; justify-content: space-between; align-items: center; }
+.nav-links a { color: #fff; text-decoration: none; margin-left: 18px; font-size: 0.95rem; }
+.nav-links a:hover { text-decoration: underline; }
+.welcome { color: #cfd6e6; font-size: 0.95rem; }
+.error-box { background: #fdecea; color: #c0392b; padding: 10px; border-radius: 6px; margin-bottom: 14px; font-size: 0.9rem; text-align: center; }
+.welcome-card p { text-align: center; color: #555; margin-top: 8px; }

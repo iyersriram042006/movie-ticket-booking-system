@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - CineBook{% endblock %}
+{% block content %}
+<div class="card welcome-card">
+    <h2>Welcome, {{ session.get('user_name') }}!</h2>
+    <p>You are logged in. Movie and seat booking will be available here.</p>
+</div>
+{% endblock %}

@@ -24,6 +24,13 @@ def init_db():
     conn.commit()
     conn.close()
 
+def get_user_by_email(email):
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT * FROM users WHERE email = ?", (email,)
+    ).fetchone()
+    conn.close()
+    return row
 
 def email_exists(email):
     conn = get_connection()

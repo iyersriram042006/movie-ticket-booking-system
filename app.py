@@ -1,9 +1,12 @@
 import sqlite3
+from functools import wraps
 
-from flask import Flask, render_template, redirect, url_for, request
-from werkzeug.security import generate_password_hash
+from flask import (
+    Flask, render_template, redirect, url_for, request, session, flash
+)
+from werkzeug.security import generate_password_hash, check_password_hash
 
-from database import init_db, email_exists, create_user
+from database import init_db, email_exists, create_user, get_user_by_email
 from validators import validate_registration
 
 app = Flask(__name__)
@@ -12,9 +15,21 @@ app.secret_key = "change-this-secret-key"
 init_db()
 
 
+def login_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        if "user_id" not in session:
+            flash("Please log in to continue.")
+            return redirect(url_for("login"))
+        return view(*args, **kwargs)
+    return wrapped
+
+
 @app.route("/")
 def home():
-    return redirect(url_for("register"))
+    if "user_id" in session:
+        return redirect(url_for("dashboard"))
+    return redirect(url_for("login"))
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -54,6 +69,45 @@ def register():
         form={},
         success="Registration successful! You can now log in.",
     )
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "GET":
+        return render_template("login.html", error=None, form={})
+
+    email = request.form.get("email", "").strip().lower()
+    password = request.form.get("password", "")
+    form = {"email": email}
+
+    if not email or not password:
+        return render_template(
+            "login.html", error="Email and password are required.", form=form
+        ), 400
+
+    user = get_user_by_email(email)
+    if user is None or not check_password_hash(user["password_hash"], password):
+        return render_template(
+            "login.html", error="Invalid email or password.", form=form
+        ), 401
+
+    session.clear()
+    session["user_id"] = user["id"]
+    session["user_name"] = user["name"]
+    return redirect(url_for("dashboard"))
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("You have been logged out.")
+    return redirect(url_for("login"))
+
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template("dashboard.html")
 
 
 if __name__ == "__main__":

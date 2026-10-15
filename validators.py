@@ -17,6 +17,8 @@ def validate_email(email):
     email = email.strip()
     if not email:
         return "Email is required."
+    if ".." in email:
+        return "Enter a valid email address."
     if not re.fullmatch(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}", email):
         return "Enter a valid email address."
     return None
@@ -26,7 +28,7 @@ def validate_phone(phone):
     phone = phone.strip()
     if not phone:
         return "Phone number is required."
-    if not phone.isdigit():
+    if not (phone.isascii() and phone.isdigit()):
         return "Phone number must contain only digits."
     if len(phone) != 10:
         return "Phone number must be exactly 10 digits."

@@ -6,13 +6,17 @@ from flask import (
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from database import init_db, email_exists, create_user, get_user_by_email
+from database import (
+    init_db, seed_data, email_exists, create_user, get_user_by_email,
+    get_movies_with_shows,
+)
 from validators import validate_registration
 
 app = Flask(__name__)
 app.secret_key = "change-this-secret-key"
 
 init_db()
+seed_data()
 
 
 def login_required(view):
@@ -108,6 +112,12 @@ def logout():
 @login_required
 def dashboard():
     return render_template("dashboard.html")
+
+
+@app.route("/movies")
+@login_required
+def movies():
+    return render_template("movies.html", movie_list=get_movies_with_shows())
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@
 {% block content %}
 <div class="card welcome-card">
     <h2>Welcome, {{ session.get('user_name') }}!</h2>
-    <p>You are logged in. Movie and seat booking will be available here.</p>
+    <p>You are logged in. Browse movies and book your seats.</p>
+    <a class="btn-link" href="{{ url_for('movies') }}">Browse movies</a>
 </div>
 {% endblock %}

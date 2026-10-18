@@ -63,3 +63,28 @@ def validate_registration(name, email, phone, password):
         if message:
             errors[field] = message
     return errors
+
+
+
+
+# ---------------- Module 2: seat selection ----------------
+SEAT_ROWS = "ABCDE"
+SEATS_PER_ROW = 8
+MAX_SEATS = 6
+ALL_SEATS = {f"{row}{num}" for row in SEAT_ROWS for num in range(1, SEATS_PER_ROW + 1)}
+
+
+def validate_seat_selection(selected, booked):
+    """Returns an error message, or None when the selection is valid."""
+    if not selected:
+        return "Select at least 1 seat."
+    if len(selected) > MAX_SEATS:
+        return "You can book a maximum of 6 seats at a time."
+    if len(set(selected)) != len(selected):
+        return "Duplicate seats selected."
+    if any(seat not in ALL_SEATS for seat in selected):
+        return "Invalid seat selected."
+    taken = sorted(seat for seat in selected if seat in booked)
+    if taken:
+        return "Seat(s) already booked: " + ", ".join(taken) + "."
+    return None

@@ -107,6 +107,75 @@ def get_movies_with_shows():
     conn.close()
     return result
 
+def get_show(show_id):
+    conn = get_connection()
+    row = conn.execute(
+        """
+        SELECT s.*, m.title, m.genre, m.language, m.duration_min
+        FROM shows s JOIN movies m ON m.id = s.movie_id
+        WHERE s.id = ?
+        """,
+        (show_id,),
+    ).fetchone()
+    conn.close()
+    return row
+
+
+def get_booked_seats(show_id):
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT seat_label FROM booking_seats WHERE show_id = ?", (show_id,)
+    ).fetchall()
+    conn.close()
+    return {row["seat_label"] for row in rows}
+
+
+def create_booking(user_id, show_id, seat_labels, price_per_seat):
+    """Saves booking and its seats in one transaction.
+    Returns the booking id, or None if any seat was taken meanwhile."""
+    conn = get_connection()
+    try:
+        total = price_per_seat * len(seat_labels)
+        cursor = conn.execute(
+            "INSERT INTO bookings (user_id, show_id, total_amount) VALUES (?, ?, ?)",
+            (user_id, show_id, total),
+        )
+        booking_id = cursor.lastrowid
+        conn.executemany(
+            "INSERT INTO booking_seats (booking_id, show_id, seat_label) VALUES (?, ?, ?)",
+            [(booking_id, show_id, seat) for seat in seat_labels],
+        )
+        conn.commit()
+        return booking_id
+    except sqlite3.IntegrityError:
+        conn.rollback()
+        return None
+    finally:
+        conn.close()
+
+
+def get_booking(booking_id, user_id):
+    """Returns the booking only if it belongs to this user."""
+    conn = get_connection()
+    booking = conn.execute(
+        """
+        SELECT b.*, s.show_date, s.show_time, s.screen, s.price, m.title
+        FROM bookings b
+        JOIN shows s ON s.id = b.show_id
+        JOIN movies m ON m.id = s.movie_id
+        WHERE b.id = ? AND b.user_id = ?
+        """,
+        (booking_id, user_id),
+    ).fetchone()
+    seats = []
+    if booking is not None:
+        rows = conn.execute(
+            "SELECT seat_label FROM booking_seats WHERE booking_id = ? ORDER BY seat_label",
+            (booking_id,),
+        ).fetchall()
+        seats = [row["seat_label"] for row in rows]
+    conn.close()
+    return booking, seats
 
 def email_exists(email):
     conn = get_connection()

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Select Seats - CineBook{% endblock %}
+{% block content %}
+<div class="seat-wrap">
+    <h2 class="page-title">{{ show.title }}</h2>
+    <p class="movie-meta">{{ show.show_date }} | {{ show.show_time }} | {{ show.screen }} | Rs. {{ show.price }} per seat</p>
+
+    {% if error %}<div class="error-box">{{ error }}</div>{% endif %}
+
+    <form method="POST" action="{{ url_for('book_seats', show_id=show.id) }}">
+        <div class="screen-bar">SCREEN</div>
+        {% for row in rows %}
+        <div class="seat-row">
+            <span class="row-label">{{ row }}</span>
+            {% for n in range(1, seats_per_row + 1) %}
+            {% set label = row ~ n %}
+            {% if label in booked %}
+            <span class="seat booked" title="{{ label }} (booked)">{{ n }}</span>
+            {% else %}
+            <label class="seat-pick">
+                <input type="checkbox" name="seats" value="{{ label }}" {% if label in selected %}checked{% endif %}>
+                <span class="seat available" title="{{ label }}">{{ n }}</span>
+            </label>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        <div class="legend">
+            <span><i class="seat available"></i> Available</span>
+            <span><i class="seat chosen"></i> Selected</span>
+            <span><i class="seat booked"></i> Booked</span>
+        </div>
+
+        <p id="summary" class="summary">0 seat(s) selected | Total: Rs. 0</p>
+        <button type="submit" class="book-btn">Book selected seats</button>
+    </form>
+    <a class="back-link" href="{{ url_for('movies') }}">Back to movies</a>
+</div>
+
+<script>
+    const price = {{ show.price }};
+    const boxes = document.querySelectorAll('input[name="seats"]');
+    const summary = document.getElementById('summary');
+    function updateSummary() {
+        const count = document.querySelectorAll('input[name="seats"]:checked').length;
+        summary.textContent = count + ' seat(s) selected | Total: Rs. ' + (count * price);
+    }
+    boxes.forEach(function (box) { box.addEventListener('change', updateSummary); });
+    updateSummary();
+</script>
+{% endblock %}

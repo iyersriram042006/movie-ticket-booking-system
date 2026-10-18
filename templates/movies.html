@@ -5,17 +5,28 @@
     <h2 class="page-title">Now Showing</h2>
     {% for item in movie_list %}
     <div class="movie-card">
-        <h3>{{ item.movie.title }}</h3>
-        <p class="movie-meta">{{ item.movie.genre }} | {{ item.movie.language }} | {{ item.movie.duration_min }} min</p>
-        <div class="show-list">
-            {% for show in item.shows %}
-            <div class="show-pill">
-                <div class="show-time">{{ show.show_date }} | {{ show.show_time }}</div>
-                <div class="show-info">{{ show.screen }} | Rs. {{ show.price }} per seat</div>
-                <div class="show-info">{{ show.seats_left }} seats left</div>
-                <span class="select-btn disabled">Select seats</span>
+        <div class="poster poster-{{ loop.index0 % 3 }}">{{ item.movie.title[0] }}</div>
+        <div class="movie-info">
+            <h3>{{ item.movie.title }}</h3>
+            <div class="movie-meta">
+                <span class="chip">{{ item.movie.genre }}</span>
+                <span class="chip">{{ item.movie.language }}</span>
+                <span class="chip">{{ item.movie.duration_min }} min</span>
             </div>
-            {% endfor %}
+            <div class="show-list">
+                {% for show in item.shows %}
+                <div class="show-pill">
+                    <div class="show-time">{{ show.show_date }} | {{ show.show_time }}</div>
+                    <div class="show-info">{{ show.screen }} | Rs. {{ show.price }} per seat</div>
+                    <div class="seats-left {% if show.seats_left <= 10 %}low{% endif %}">{{ show.seats_left }} seats left</div>
+                    {% if show.seats_left > 0 %}
+                    <a class="select-btn" href="{{ url_for('seat_layout', show_id=show.id) }}">Select seats</a>
+                    {% else %}
+                    <span class="select-btn disabled">Sold out</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
     {% else %}

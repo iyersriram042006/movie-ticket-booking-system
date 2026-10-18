@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Booking Confirmed - CineBook{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>Booking Confirmed</h2>
+    <div class="success">Your tickets are booked successfully.</div>
+    <table class="ticket">
+        <tr><th>Booking ID</th><td>{{ booking.id }}</td></tr>
+        <tr><th>Movie</th><td>{{ booking.title }}</td></tr>
+        <tr><th>Date and time</th><td>{{ booking.show_date }} | {{ booking.show_time }}</td></tr>
+        <tr><th>Screen</th><td>{{ booking.screen }}</td></tr>
+        <tr><th>Seats</th><td>{{ seats | join(', ') }}</td></tr>
+        <tr><th>Price per seat</th><td>Rs. {{ booking.price }}</td></tr>
+        <tr><th>Total amount</th><td><strong>Rs. {{ booking.total_amount }}</strong></td></tr>
+    </table>
+    <a class="btn-link" href="{{ url_for('movies') }}">Book more tickets</a>
+</div>
+{% endblock %}

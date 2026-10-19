@@ -9,6 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from database import (
     init_db, seed_data, email_exists, create_user, get_user_by_email,
     get_movies_with_shows, get_show, get_booked_seats, create_booking, get_booking,
+    get_user_bookings,
 )
 from validators import (
     validate_registration, validate_seat_selection, SEAT_ROWS, SEATS_PER_ROW,
@@ -171,6 +172,10 @@ def booking_confirmation(booking_id):
         abort(404)
     return render_template("confirmation.html", booking=booking, seats=seats)
 
+@app.route("/bookings")
+@login_required
+def my_bookings():
+    return render_template("my_bookings.html", booking_list=get_user_bookings(session["user_id"]))
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)

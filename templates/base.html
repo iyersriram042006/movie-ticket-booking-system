@@ -13,6 +13,7 @@
             {% if session.get('user_id') %}
                 <span class="welcome">Hi, {{ session.get('user_name') }}</span>
                 <a href="{{ url_for('movies') }}">Movies</a>
+                <a href="{{ url_for('my_bookings') }}">My Bookings</a>
                 <a href="{{ url_for('dashboard') }}">Home</a>
                 <a href="{{ url_for('logout') }}">Logout</a>
             {% else %}

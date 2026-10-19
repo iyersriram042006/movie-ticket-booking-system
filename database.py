@@ -177,6 +177,31 @@ def get_booking(booking_id, user_id):
     conn.close()
     return booking, seats
 
+def get_user_bookings(user_id):
+    """All bookings of one user, newest first, each with its seat labels."""
+    conn = get_connection()
+    bookings = conn.execute(
+        """
+        SELECT b.id, b.total_amount, b.created_at,
+               s.show_date, s.show_time, s.screen, m.title
+        FROM bookings b
+        JOIN shows s ON s.id = b.show_id
+        JOIN movies m ON m.id = s.movie_id
+        WHERE b.user_id = ?
+        ORDER BY b.id DESC
+        """,
+        (user_id,),
+    ).fetchall()
+    result = []
+    for booking in bookings:
+        rows = conn.execute(
+            "SELECT seat_label FROM booking_seats WHERE booking_id = ? ORDER BY seat_label",
+            (booking["id"],),
+        ).fetchall()
+        result.append({"booking": booking, "seats": [row["seat_label"] for row in rows]})
+    conn.close()
+    return result
+
 def email_exists(email):
     conn = get_connection()
     row = conn.execute(

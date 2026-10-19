@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}My Bookings - CineBook{% endblock %}
+{% block content %}
+<div class="bookings-wrap">
+    <h2 class="page-title">My Bookings</h2>
+    {% for item in booking_list %}
+    <div class="booking-item">
+        <div>
+            <h3>{{ item.booking.title }}</h3>
+            <p>{{ item.booking.show_date }} | {{ item.booking.show_time }} | {{ item.booking.screen }}</p>
+            <p>Seats: {{ item.seats | join(', ') }}</p>
+        </div>
+        <div class="booking-side">
+            <div class="booking-id">Booking ID: {{ item.booking.id }}</div>
+            <div class="booking-total">Rs. {{ item.booking.total_amount }}</div>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-box">
+        <p>You have no bookings yet.</p>
+        <a class="btn-link" href="{{ url_for('movies') }}">Browse movies</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

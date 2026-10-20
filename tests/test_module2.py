@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import database
 from app import app as flask_app
+from datetime import datetime, timedelta
 from validators import validate_seat_selection, ALL_SEATS
 
 
@@ -313,3 +314,30 @@ def test_M2_TC42_past_show_cannot_be_booked(client):
     response = book(user, ["A1"])
     assert response.status_code in (400, 404)
     assert count_rows("bookings") == 0
+
+
+
+def set_show_start(show_id, when):
+    conn = database.get_connection()
+    conn.execute(
+        "UPDATE shows SET show_date = ?, show_time = ? WHERE id = ?",
+        (when.strftime("%Y-%m-%d"), when.strftime("%H:%M"), show_id),
+    )
+    conn.commit()
+    conn.close()
+
+
+def test_M2_TC43_show_that_started_five_minutes_ago_cannot_be_booked(client):
+    set_show_start(1, datetime.now() - timedelta(minutes=5))
+    user = logged_in_client(USER_A)
+    response = book(user, ["A1"])
+    assert response.status_code in (400, 404)
+    assert count_rows("bookings") == 0
+
+
+def test_M2_TC44_show_starting_in_five_minutes_can_be_booked(client):
+    set_show_start(1, datetime.now() + timedelta(minutes=5))
+    user = logged_in_client(USER_A)
+    response = book(user, ["A1"])
+    assert response.status_code == 302
+    assert count_rows("bookings") == 1

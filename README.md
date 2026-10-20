@@ -43,6 +43,19 @@ Open http://127.0.0.1:5001/register in the browser.
 
 Managed in JIRA with epics, user stories, sub-tasks, sprint planning, defect tracking and sprint reports.
 
+
+## Testing
+
+Automated tests (pytest) cover both modules: 87 test cases.
+
+```bash
+python -m pytest tests/ -v
+```
+
+Test case sheets with results and bug logs are in the `docs/` folder:
+- MTB_Module1_Test_Cases_Executed.xlsx
+- MTB_Module2_Test_Cases_Executed.xlsx
+
 ## Author
 
 Sriram Iyer, B.Tech CSE, Ramdeobaba University, Nagpur

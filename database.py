@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 DB_NAME = "movie_booking.db"
 TOTAL_SEATS = 40  # 5 rows (A to E) x 8 seats
@@ -88,7 +88,15 @@ def seed_data():
     conn.close()
 
 
+def is_show_in_past(show):
+    """True when the show has already started."""
+    start = datetime.strptime(f"{show['show_date']} {show['show_time']}", "%Y-%m-%d %H:%M")
+    return start < datetime.now()
+
+
 def get_movies_with_shows():
+    """Movies with their upcoming shows (shows that already started are hidden)."""
+    now_text = datetime.now().strftime("%Y-%m-%d %H:%M")
     conn = get_connection()
     movies = conn.execute("SELECT * FROM movies ORDER BY title").fetchall()
     result = []
@@ -99,9 +107,10 @@ def get_movies_with_shows():
                    ? - (SELECT COUNT(*) FROM booking_seats bs WHERE bs.show_id = s.id) AS seats_left
             FROM shows s
             WHERE s.movie_id = ?
+              AND (s.show_date || ' ' || s.show_time) >= ?
             ORDER BY s.show_date, s.show_time
             """,
-            (TOTAL_SEATS, movie["id"]),
+            (TOTAL_SEATS, movie["id"], now_text),
         ).fetchall()
         result.append({"movie": movie, "shows": shows})
     conn.close()

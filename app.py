@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from database import (
     init_db, seed_data, email_exists, create_user, get_user_by_email,
     get_movies_with_shows, get_show, get_booked_seats, create_booking, get_booking,
-    get_user_bookings,
+    get_user_bookings, is_show_in_past,
 )
 from validators import (
     validate_registration, validate_seat_selection, SEAT_ROWS, SEATS_PER_ROW,
@@ -139,7 +139,7 @@ def render_seats(show, selected=None, error=None, status=200):
 @login_required
 def seat_layout(show_id):
     show = get_show(show_id)
-    if show is None:
+    if show is None or is_show_in_past(show):
         abort(404)
     return render_seats(show)
 
@@ -148,7 +148,7 @@ def seat_layout(show_id):
 @login_required
 def book_seats(show_id):
     show = get_show(show_id)
-    if show is None:
+    if show is None or is_show_in_past(show):
         abort(404)
 
     selected = request.form.getlist("seats")
